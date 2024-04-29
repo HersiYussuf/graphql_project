@@ -1,21 +1,14 @@
-# Define your data types here
-type Playlist {
-  id: ID!
-  name: String!
-  description: String
-}
-
-# The root Query type defines API operations that retrieve data.
 type Query {
-  # Define a query to retrieve playlists
-  getPlaylists: [Playlist]
-  # Define a query to retrieve a single playlist by ID
-  getPlaylist(id: ID!): Playlist
+  "Playlists hand-picked to be featured to all users."
+  featuredPlaylists: [Playlist!]!
 }
 
-# You may also define a Mutation type if you want to perform updates, deletes, or inserts.
-type Mutation {
-  addPlaylist(name: String!, description: String): Playlist
-  updatePlaylist(id: ID!, name: String, description: String): Playlist
-  deletePlaylist(id: ID!): Playlist
+"A curated collection of tracks designed for a specific activity or mood."
+type Playlist {
+  "The ID for the playlist."
+  id: ID!
+  "The name of the playlist."
+  name: String!
+  "Describes the playlist, what to expect and entices the user to listen."
+  description: String
 }

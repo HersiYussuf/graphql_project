@@ -3,18 +3,35 @@ import { startStandaloneServer } from "@apollo/server/standalone";
 import { readFileSync } from "fs";
 import path from "path";
 import { gql } from "graphql-tag";
+import { resolvers } from "./resolvers";
+import { SpotifyAPI } from "./Datasources/spotify-api";
 
-// Correctly load and use the GraphQL schema from a file
-const schemaPath = path.resolve(__dirname, "./schema.graphql");
-const typeDefs = gql(readFileSync(schemaPath, { encoding: "utf-8" }));
+const typeDefs = gql(
+  readFileSync(path.resolve(__dirname, "./schema.graphql"), {
+    encoding: "utf-8",
+  })
+);
 
 async function startApolloServer() {
-  const server = new ApolloServer({ typeDefs })
-  const { url } = await startStandaloneServer(server, { listen: { port: 5000 } }); // Ensure to specify the port or other options if necessary
+  const server = new ApolloServer({
+    typeDefs, resolvers, dataSources: () => ({
+      spotifyAPI: new SpotifyAPI(),
+    })
+  });
+
+  const { url } = await startStandaloneServer(server, {
+    context: async () => {
+      const { cache } = server;
+      return {
+        dataSources: new SpotifyAPI({ cache }), // Adjusting to match the expected structure
+      };
+    },
+  });
+
   console.log(`
-        🚀  Server is running!
-        📭  Query at ${url}
-    `);
+    🚀  Server is running
+    📭  Query at ${url}
+  `);
 }
 
 startApolloServer();
