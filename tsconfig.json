@@ -24,6 +24,6 @@
     "typeRoots": ["node_modules/@types"]
   },
   "files": [],
-  "include": ["src/**/*"],
-  "exclude": ["codegen.ts", "dist"]
+  "include": ["src/**/*", "codegen.ts"],
+  "exclude": ["src/codegen.ts", "dist"]
 }

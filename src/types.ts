@@ -1,4 +1,5 @@
 import { GraphQLResolveInfo } from 'graphql';
+import { DataSourceContext } from './context';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -6,7 +7,6 @@ export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: 
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
 export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
 export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
-export type RequireFields<T, K extends keyof T> = Omit<T, K> & { [P in K]-?: NonNullable<T[P]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: { input: string; output: string; }
@@ -16,47 +16,21 @@ export type Scalars = {
   Float: { input: number; output: number; }
 };
 
-export type Mutation = {
-  __typename?: 'Mutation';
-  addPlaylist?: Maybe<Playlist>;
-  deletePlaylist?: Maybe<Playlist>;
-  updatePlaylist?: Maybe<Playlist>;
-};
-
-
-export type MutationAddPlaylistArgs = {
-  description?: InputMaybe<Scalars['String']['input']>;
-  name: Scalars['String']['input'];
-};
-
-
-export type MutationDeletePlaylistArgs = {
-  id: Scalars['ID']['input'];
-};
-
-
-export type MutationUpdatePlaylistArgs = {
-  description?: InputMaybe<Scalars['String']['input']>;
-  id: Scalars['ID']['input'];
-  name?: InputMaybe<Scalars['String']['input']>;
-};
-
+/** A curated collection of tracks designed for a specific activity or mood. */
 export type Playlist = {
   __typename?: 'Playlist';
+  /** Describes the playlist, what to expect and entices the user to listen. */
   description?: Maybe<Scalars['String']['output']>;
+  /** The ID for the playlist. */
   id: Scalars['ID']['output'];
+  /** The name of the playlist. */
   name: Scalars['String']['output'];
 };
 
 export type Query = {
   __typename?: 'Query';
-  getPlaylist?: Maybe<Playlist>;
-  getPlaylists?: Maybe<Array<Maybe<Playlist>>>;
-};
-
-
-export type QueryGetPlaylistArgs = {
-  id: Scalars['ID']['input'];
+  /** Playlists hand-picked to be featured to all users. */
+  featuredPlaylists: Array<Playlist>;
 };
 
 
@@ -132,7 +106,6 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 export type ResolversTypes = {
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
-  Mutation: ResolverTypeWrapper<{}>;
   Playlist: ResolverTypeWrapper<Playlist>;
   Query: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
@@ -142,32 +115,23 @@ export type ResolversTypes = {
 export type ResolversParentTypes = {
   Boolean: Scalars['Boolean']['output'];
   ID: Scalars['ID']['output'];
-  Mutation: {};
   Playlist: Playlist;
   Query: {};
   String: Scalars['String']['output'];
 };
 
-export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
-  addPlaylist?: Resolver<Maybe<ResolversTypes['Playlist']>, ParentType, ContextType, RequireFields<MutationAddPlaylistArgs, 'name'>>;
-  deletePlaylist?: Resolver<Maybe<ResolversTypes['Playlist']>, ParentType, ContextType, RequireFields<MutationDeletePlaylistArgs, 'id'>>;
-  updatePlaylist?: Resolver<Maybe<ResolversTypes['Playlist']>, ParentType, ContextType, RequireFields<MutationUpdatePlaylistArgs, 'id'>>;
-};
-
-export type PlaylistResolvers<ContextType = any, ParentType extends ResolversParentTypes['Playlist'] = ResolversParentTypes['Playlist']> = {
+export type PlaylistResolvers<ContextType = DataSourceContext, ParentType extends ResolversParentTypes['Playlist'] = ResolversParentTypes['Playlist']> = {
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
-  getPlaylist?: Resolver<Maybe<ResolversTypes['Playlist']>, ParentType, ContextType, RequireFields<QueryGetPlaylistArgs, 'id'>>;
-  getPlaylists?: Resolver<Maybe<Array<Maybe<ResolversTypes['Playlist']>>>, ParentType, ContextType>;
+export type QueryResolvers<ContextType = DataSourceContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
+  featuredPlaylists?: Resolver<Array<ResolversTypes['Playlist']>, ParentType, ContextType>;
 };
 
-export type Resolvers<ContextType = any> = {
-  Mutation?: MutationResolvers<ContextType>;
+export type Resolvers<ContextType = DataSourceContext> = {
   Playlist?: PlaylistResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
 };
